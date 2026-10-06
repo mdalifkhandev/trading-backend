@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  avatar       String?      @default("")
+  subscription String       @default("starter")
+  passwordHash String
+  twoFactorEnabled Boolean    @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  subscriptionRecord Subscription?
+  schwabToken  SchwabToken?
+  tradeLimit   TradeLimit?
+  restrictionSetting RestrictionSetting?
+  tradeLogs    TradeLog[]
+  tradeJournals TradeJournal[]
+  lockouts     Lockout[]
+  sessions     DeviceSession[]
+}
+
+model DeviceSession {
+  id         String   @id @default(cuid())
+  userId     String
+  device     String   @default("Unknown Device")
+  ipAddress  String?
+  isActive   Boolean  @default(true)
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+}
+
+model SchwabToken {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TradeLimit {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  dailyLimit   Int
+  lockoutHours Int
+  isEnabled    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RestrictionSetting {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  maxPositionSize Float?
+  instruments     String   @default("Single/Stocks")
+  riskLevel       String   @default("Unknown")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  planCode     String   @default("starter")
+  status       String   @default("active")
+  billingCycle String   @default("monthly")
+  price        Float    @default(9)
+  startedAt    DateTime @default(now())
+  expiresAt    DateTime
+  canceledAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
+
+model TradeLog {
+  id         String   @id @default(cuid())
+  userId     String
+  broker     String
+  orderId    String
+  symbol     String
+  side       String
+  quantity   Float
+  status     String
+  executedAt DateTime
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, broker, orderId])
+  @@index([userId, executedAt])
+}
+
+model TradeJournal {
+  id         String   @id @default(cuid())
+  userId     String
+  broker     String
+  orderId    String
+  symbol     String
+  side       String
+  quantity   Float
+  entryPrice Float?
+  exitPrice  Float?
+  pnl        Float?
+  status     String
+  executedAt DateTime
+  rawData    Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, broker, orderId])
+  @@index([userId, executedAt])
+  @@index([userId, symbol])
+}
+
+model Lockout {
+  id          String   @id @default(cuid())
+  userId      String
+  reason      String
+  lockedUntil DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive, lockedUntil])
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schwab OAuth Test</title>
+    <link rel="stylesheet" href="/schwab-test.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel">
+        <div class="heading">
+          <p class="eyebrow">Trading Control Backend</p>
+          <h1>Schwab OAuth Test</h1>
+        </div>
+
+        <div id="notice" class="notice hidden"></div>
+
+        <div class="grid">
+          <form id="registerForm" class="box">
+            <h2>Register</h2>
+            <label>
+              Name
+              <input id="registerName" name="name" autocomplete="name" value="Demo Trader" required>
+            </label>
+            <label>
+              Email
+              <input id="registerEmail" name="email" type="email" autocomplete="email" value="demo@example.com" required>
+            </label>
+            <label>
+              Password
+              <input id="registerPassword" name="password" type="password" autocomplete="new-password" value="password123" required>
+            </label>
+            <button type="submit">Register</button>
+          </form>
+
+          <form id="loginForm" class="box">
+            <h2>Login</h2>
+            <label>
+              Email
+              <input id="loginEmail" name="email" type="email" autocomplete="email" value="demo@example.com" required>
+            </label>
+            <label>
+              Password
+              <input id="loginPassword" name="password" type="password" autocomplete="current-password" value="password123" required>
+            </label>
+            <button type="submit">Login</button>
+          </form>
+        </div>
+
+        <section class="box actions">
+          <h2>Schwab Flow</h2>
+          <div class="buttonRow">
+            <button id="meButton" type="button">Check Auth</button>
+            <button id="statusButton" type="button">Schwab Status</button>
+            <button id="accountButton" type="button">Account Details</button>
+            <button id="connectButton" type="button">Connect Schwab</button>
+            <button id="syncButton" type="button">Sync Real Trades</button>
+            <button id="todayButton" type="button">Today's Trades</button>
+            <button id="clearButton" type="button" class="secondary">Clear Token</button>
+          </div>
+        </section>
+
+        <section class="box">
+          <h2>Response</h2>
+          <div id="loadingState" class="loadingState hidden" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="loadingText">Loading...</span>
+          </div>
+          <pre id="output">{}</pre>
+        </section>
+      </section>
+    </main>
+
+    <script src="/schwab-test.js"></script>
+  </body>
+</html>
