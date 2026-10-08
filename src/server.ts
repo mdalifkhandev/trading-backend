@@ -8,3 +8,4 @@ app.listen(env.PORT, () => {
   startJournalScheduler();
   console.log(`Server listening on port ${env.PORT}`);
 });
+
